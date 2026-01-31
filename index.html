@@ -9,35 +9,67 @@
 body {
     margin: 0;
     min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #3b82f6;
-    font-family: Arial, sans-serif;
-    color: #8b5cf6;
 }
 
-.container {
-    background: rgba(0, 0, 0, 0.3);
+.card {
+    background: rgba(0,0,0,0.35);
     padding: 25px;
-    border-radius: 14px;
+    border-radius: 16px;
     width: 90%;
     max-width: 520px;
+    color: #fff;
     text-align: center;
 }
 
-.title {
-    font-size: 1.1em;
-    margin-bottom: 15px;
-    color: #8b5cf6;
+h2 {
+    margin-top: 0;
+    color: #e9d5ff;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background: #8b5cf6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+button:hover {
+    background: #a78bfa;
+}
+
+.link {
+    margin-top: 10px;
+    font-size: 0.9em;
+    cursor: pointer;
+    color: #ddd;
 }
 
 /* COPY BOX */
 .copy-box {
+    margin-top: 15px;
     display: flex;
     gap: 10px;
     align-items: center;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0,0,0,0.45);
     padding: 12px;
     border-radius: 10px;
 }
@@ -46,31 +78,39 @@ body {
     flex: 1;
     font-size: 0.85em;
     word-break: break-all;
-    color: #8b5cf6;
+    color: #e9d5ff;
 }
 
 .copy-box button {
-    background: #8b5cf6;
-    color: white;
-    border: none;
+    width: auto;
     padding: 8px 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.9em;
-}
-
-.copy-box button:hover {
-    background: #a78bfa;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-    <div class="title">
-        exel hub finder paid, find brainrots INSTANTLY ⚡⏩
-    </div>
+<!-- LOGIN -->
+<div class="card" id="loginCard">
+    <h2>Login</h2>
+    <input id="loginUser" placeholder="Username">
+    <input id="loginPass" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <div class="link" onclick="showRegister()">Create account</div>
+</div>
+
+<!-- REGISTER -->
+<div class="card" id="registerCard" style="display:none;">
+    <h2>Register</h2>
+    <input id="regUser" placeholder="Username">
+    <input id="regPass" type="password" placeholder="Password">
+    <button onclick="register()">Register</button>
+    <div class="link" onclick="showLogin()">Back to login</div>
+</div>
+
+<!-- CONTENT -->
+<div class="card" id="contentCard" style="display:none;">
+    <h2>exel hub finder paid, find brainrots INSTANTLY ⚡⏩</h2>
 
     <div class="copy-box">
         <span>
@@ -78,14 +118,63 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/exelscripts/joiner/re
         </span>
         <button onclick="copyAny(this)">Copy</button>
     </div>
+
+    <button style="margin-top:15px;background:#ef4444;" onclick="logout()">Logout</button>
 </div>
 
 <script>
+const users = JSON.parse(localStorage.getItem("users") || "{}");
+
+function showRegister() {
+    loginCard.style.display = "none";
+    registerCard.style.display = "block";
+}
+
+function showLogin() {
+    registerCard.style.display = "none";
+    loginCard.style.display = "block";
+}
+
+function register() {
+    const u = regUser.value;
+    const p = regPass.value;
+    if (!u || !p) return alert("Fill all fields");
+    if (users[u]) return alert("User already exists");
+    users[u] = p;
+    localStorage.setItem("users", JSON.stringify(users));
+    alert("Account created!");
+    showLogin();
+}
+
+function login() {
+    const u = loginUser.value;
+    const p = loginPass.value;
+    if (users[u] !== p) return alert("Invalid login");
+    localStorage.setItem("loggedIn", u);
+    showContent();
+}
+
+function logout() {
+    localStorage.removeItem("loggedIn");
+    location.reload();
+}
+
+function showContent() {
+    loginCard.style.display = "none";
+    registerCard.style.display = "none";
+    contentCard.style.display = "block";
+}
+
 function copyAny(btn) {
     const text = btn.previousElementSibling.innerText;
     navigator.clipboard.writeText(text);
     btn.innerText = "Copied!";
     setTimeout(() => btn.innerText = "Copy", 1500);
+}
+
+// Auto-login
+if (localStorage.getItem("loggedIn")) {
+    showContent();
 }
 </script>
 
