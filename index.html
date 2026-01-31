@@ -3,79 +3,91 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Roblox Script Store</title>
+<title>Exel Hub Finder</title>
+
 <style>
 body {
     margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #3b82f6;
     font-family: Arial, sans-serif;
-    background: #0f0f0f;
-    color: white;
+    color: #8b5cf6;
 }
-header {
-    background: #ff3b3b;
-    padding: 20px;
+
+.container {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 25px;
+    border-radius: 14px;
+    width: 90%;
+    max-width: 520px;
     text-align: center;
 }
-.products {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    padding: 20px;
+
+.title {
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    color: #8b5cf6;
 }
-.product {
-    background: #1c1c1c;
-    padding: 15px;
+
+/* COPY BOX */
+.copy-box {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    background: rgba(0,0,0,0.4);
+    padding: 12px;
     border-radius: 10px;
-    text-align: center;
 }
-.buy {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 10px 15px;
-    background: #ff3b3b;
+
+.copy-box span {
+    flex: 1;
+    font-size: 0.85em;
+    word-break: break-all;
+    color: #8b5cf6;
+}
+
+.copy-box button {
+    background: #8b5cf6;
     color: white;
-    text-decoration: none;
-    border-radius: 5px;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
 }
-.buy:hover {
-    background: #ff5c5c;
-}
-footer {
-    text-align: center;
-    padding: 15px;
-    background: #080808;
+
+.copy-box button:hover {
+    background: #a78bfa;
 }
 </style>
 </head>
+
 <body>
 
-<header>
-    <h1>Roblox Script Store</h1>
-    <p>Instant Delivery • Secure Payments</p>
-</header>
+<div class="container">
+    <div class="title">
+        exel hub finder paid, find brainrots INSTANTLY ⚡⏩
+    </div>
 
-<div class="products">
-    <div class="product">
-        <h2>Steal a brainot Exel HUB</h2>
-        <p>Massive hub on steal a brainrot just for stealing.</p>
-        <a class="buy" https://paypal.me/brandonpsahur="#" target="_blank">Buy $5</a>
-    </div>
-    <div class="product">
-        <h2>No clone and Clone Desync</h2>
-        <p>Desync!.</p>
-        <a class="buy" https://paypal.me/brandonpsahur="#" target="_blank">Buy $3</a>
-    </div>
-    <div class="product">
-        <h2>Speed Script</h2>
-        <p>Speed bypass.</p>
-        <a class="buy" https://paypal.me/brandonpsahur="#" target="_blank">Buy $4</a>
+    <div class="copy-box">
+        <span>
+loadstring(game:HttpGet("https://raw.githubusercontent.com/exelscripts/joiner/refs/heads/main/exel"))()
+        </span>
+        <button onclick="copyAny(this)">Copy</button>
     </div>
 </div>
 
-<footer>
-    © 2026 Roblox Script Store
-</footer>
+<script>
+function copyAny(btn) {
+    const text = btn.previousElementSibling.innerText;
+    navigator.clipboard.writeText(text);
+    btn.innerText = "Copied!";
+    setTimeout(() => btn.innerText = "Copy", 1500);
+}
+</script>
 
 </body>
 </html>
-
