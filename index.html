@@ -300,21 +300,43 @@ function renderAdminPanel(){
         // Ban button
         let banBtn=document.createElement("button");
         banBtn.textContent="Ban";
-        banBtn.onclick=()=>{delete activeKeys[k]; delete keys[k]; localStorage.setItem("activeKeys",JSON.stringify(activeKeys)); localStorage.setItem("keys",JSON.stringify(keys)); renderAdminPanel();};
+        banBtn.onclick=()=>{
+            delete activeKeys[k];
+            delete keys[k];
+            localStorage.setItem("activeKeys",JSON.stringify(activeKeys));
+            localStorage.setItem("keys",JSON.stringify(keys));
+            renderAdminPanel();
+        };
         keyDiv.appendChild(banBtn);
 
         // Add time
         let addInput=document.createElement("input"); addInput.placeholder="+sec";
         keyDiv.appendChild(addInput);
         let addBtn=document.createElement("button"); addBtn.textContent="+";
-        addBtn.onclick=()=>{let val=parseInt(addInput.value); if(!isNaN(val)){activeKeys[k]+=val*1000; localStorage.setItem("activeKeys",JSON.stringify(activeKeys)); renderAdminPanel();}};
+        addBtn.onclick=()=>{
+            let val=parseInt(addInput.value);
+            if(!isNaN(val)){
+                activeKeys[k]+=val*1000;
+                localStorage.setItem("activeKeys",JSON.stringify(activeKeys));
+                renderAdminPanel();
+            }
+        };
         keyDiv.appendChild(addBtn);
 
         // Subtract time
         let subInput=document.createElement("input"); subInput.placeholder="-sec";
         keyDiv.appendChild(subInput);
         let subBtn=document.createElement("button"); subBtn.textContent="-";
-        subBtn.onclick=()=>{let val=parseInt(subInput.value); if(!isNaN(val)){activeKeys[k]-=val*1000; if(activeKeys[k]<Date.now()){delete activeKeys[k]; delete keys[k];} localStorage.setItem("activeKeys",JSON.stringify(activeKeys)); localStorage.setItem("keys",JSON.stringify(keys)); renderAdminPanel();}};
+        subBtn.onclick=()=>{
+            let val=parseInt(subInput.value);
+            if(!isNaN(val)){
+                activeKeys[k]-=val*1000;
+                if(activeKeys[k]<Date.now()){delete activeKeys[k]; delete keys[k];}
+                localStorage.setItem("activeKeys",JSON.stringify(activeKeys));
+                localStorage.setItem("keys",JSON.stringify(keys));
+                renderAdminPanel();
+            }
+        };
         keyDiv.appendChild(subBtn);
 
         panel.appendChild(keyDiv);
@@ -325,11 +347,17 @@ function renderAdminPanel(){
 function gen(seconds){
     const key="EXEL-"+Math.random().toString(36).substring(2,6).toUpperCase()+"-"+Math.random().toString(36).substring(2,6).toUpperCase();
     keys[key]=seconds;
+    activeKeys[key]=Date.now()+seconds*1000;
     localStorage.setItem("keys",JSON.stringify(keys));
+    localStorage.setItem("activeKeys",JSON.stringify(activeKeys));
+
     navigator.clipboard.writeText(key);
+    const toast=document.getElementById("toast");
     toast.textContent=`Copied to clipboard 📋 → ${key}`;
     toast.style.display="block";
     setTimeout(()=>toast.style.display="none",1800);
+
+    renderAdminPanel();
 }
 
 // AUTO LOGIN
