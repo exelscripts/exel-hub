@@ -8,8 +8,8 @@
 <style>
 :root {
     --bg: #020617;
-    --card: rgba(15,23,42,.75);
-    --border: rgba(56,189,248,.35);
+    --card: rgba(15,23,42,.78);
+    --border: rgba(56,189,248,.4);
     --accent: #38bdf8;
     --text: #e5e7eb;
 }
@@ -28,64 +28,67 @@ body {
 }
 
 .card {
-    width: 90%;
-    max-width: 480px;
+    width: 92%;
+    max-width: 500px;
     background: var(--card);
     border: 1px solid var(--border);
-    backdrop-filter: blur(12px);
-    border-radius: 18px;
-    padding: 28px;
-    box-shadow: 0 20px 40px rgba(0,0,0,.6);
-    animation: fade 0.5s ease;
+    backdrop-filter: blur(14px);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 25px 50px rgba(0,0,0,.65);
+    animation: fade .45s ease;
 }
 
 @keyframes fade {
-    from { opacity:0; transform:translateY(20px); }
+    from { opacity:0; transform:translateY(18px); }
     to { opacity:1; transform:none; }
 }
 
 h2 {
-    margin-top: 0;
+    margin: 0 0 14px;
     color: #7dd3fc;
-    font-size: 1.15em;
+    font-size: 1.2em;
 }
 
 input {
     width: 100%;
-    max-width: 300px;
-    margin: 0 auto;
-    padding: 10px;
-    border-radius: 10px;
-    background: rgba(2,6,23,.8);
+    padding: 14px;
+    font-size: 1em;
+    border-radius: 12px;
+    background: rgba(2,6,23,.85);
     border: 1px solid var(--border);
     color: var(--text);
     text-align: center;
 }
 
+input::placeholder {
+    color: #94a3b8;
+}
+
 button {
     width: 100%;
-    margin-top: 14px;
-    padding: 11px;
-    border-radius: 10px;
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 12px;
     border: none;
     background: linear-gradient(135deg,#38bdf8,#60a5fa);
     color: #020617;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
 }
 
 button:hover {
-    box-shadow: 0 0 18px rgba(56,189,248,.45);
+    box-shadow: 0 0 20px rgba(56,189,248,.45);
 }
 
 .copy-box {
-    margin-top: 16px;
+    margin-top: 18px;
     display: flex;
     gap: 10px;
-    background: rgba(2,6,23,.75);
+    background: rgba(2,6,23,.8);
     border: 1px solid var(--border);
-    padding: 12px;
-    border-radius: 12px;
+    padding: 14px;
+    border-radius: 14px;
 }
 
 .copy-box span {
@@ -97,35 +100,37 @@ button:hover {
 
 .copy-box button {
     width: auto;
-    padding: 8px 12px;
+    padding: 8px 14px;
 }
 
 .dashboard {
     margin-top: 16px;
-    padding: 12px;
-    border-radius: 12px;
-    background: rgba(2,6,23,.75);
+    padding: 14px;
+    border-radius: 14px;
+    background: rgba(2,6,23,.8);
     border: 1px solid var(--border);
-    font-size: .9em;
+    font-size: .95em;
 }
 
 .error {
     margin-top: 10px;
     color: #fca5a5;
-    font-size: .85em;
+    font-size: .9em;
 }
 </style>
 </head>
 
 <body>
 
+<!-- LICENSE SCREEN -->
 <div class="card" id="login">
     <h2>Enter License Key</h2>
     <input id="keyInput" placeholder="EXEL-XH-XXXX-XXXX">
-    <button onclick="activate()">Unlock</button>
+    <button onclick="redeem()">Redeem Key</button>
     <div class="error" id="error"></div>
 </div>
 
+<!-- MAIN APP -->
 <div class="card" id="app" style="display:none;">
     <h2>exel hub finder paid, find brainrots INSTANTLY ⚡⏩</h2>
 
@@ -139,11 +144,10 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/exelscripts/joiner/re
         </span>
         <button onclick="copy(this)">Copy</button>
     </div>
-
-    <button style="margin-top:18px;background:#ef4444;" onclick="logout()">Logout</button>
 </div>
 
 <script>
+/* KEY DURATIONS (seconds) */
 const keys = {
 "EXEL-1H-A9Q7-MP2D":3600,"EXEL-1H-Z7Q1-A8MD":3600,"EXEL-1H-QA91-Z7MD":3600,
 "EXEL-1H-7AQP-Z91D":3600,"EXEL-1H-M9ZQ-A71D":3600,
@@ -158,45 +162,58 @@ const keys = {
 "EXEL-4H-MZ7A-Q91D":14400,"EXEL-4H-91AZ-QM7D":14400
 };
 
-function activate() {
-    const k = keyInput.value.trim().toUpperCase();
-    if (!keys[k]) return error.textContent = "Invalid key";
-    localStorage.setItem("key", k);
-    localStorage.setItem("start", Date.now());
-    show();
+/* REDEEM KEY (ONE TIME) */
+function redeem() {
+    const key = keyInput.value.trim().toUpperCase();
+    if (!keys[key]) {
+        error.textContent = "Invalid license key";
+        return;
+    }
+
+    const expiresAt = Date.now() + (keys[key] * 1000);
+
+    localStorage.setItem("redeemed", "true");
+    localStorage.setItem("expiresAt", expiresAt);
+
+    showApp();
 }
 
-function show() {
-    login.style.display="none";
-    app.style.display="block";
+/* SHOW APP IF REDEEMED */
+function showApp() {
+    login.style.display = "none";
+    app.style.display = "block";
     tick();
 }
 
+/* COUNTDOWN */
 function tick() {
-    const start = +localStorage.getItem("start");
-    const dur = keys[localStorage.getItem("key")];
-    const left = dur - Math.floor((Date.now()-start)/1000);
-    if (left <= 0) return logout();
+    const expires = +localStorage.getItem("expiresAt");
+    const remaining = Math.floor((expires - Date.now()) / 1000);
+
+    if (remaining <= 0) {
+        localStorage.clear();
+        location.reload();
+        return;
+    }
+
     timeLeft.textContent =
-        new Date(left*1000).toISOString().substr(11,8);
-    setTimeout(tick,1000);
+        new Date(remaining * 1000).toISOString().substr(11, 8);
+
+    setTimeout(tick, 1000);
 }
 
-function logout() {
-    localStorage.clear();
-    location.reload();
+/* COPY SCRIPT */
+function copy(btn) {
+    navigator.clipboard.writeText(btn.previousElementSibling.innerText);
+    btn.textContent = "Copied";
+    setTimeout(() => btn.textContent = "Copy", 1200);
 }
 
-function copy(b){
-    navigator.clipboard.writeText(b.previousElementSibling.innerText);
-    b.textContent="Copied";
-    setTimeout(()=>b.textContent="Copy",1200);
+/* AUTO LOGIN IF ALREADY REDEEMED */
+if (localStorage.getItem("redeemed") === "true") {
+    showApp();
 }
-
-if(localStorage.getItem("key")) show();
 </script>
 
 </body>
 </html>
-
-
