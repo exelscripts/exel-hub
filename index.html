@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Exel Hub Finder</title>
+<title>ExelNotifier</title>
 
 <style>
 :root{
@@ -178,10 +178,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/exelscripts/joiner/re
 </div>
 
 <script>
-/* 🔐 ADMIN KEY FIXED */
 const ADMIN_KEY = "EXEL-ADMIN-2704";
-
-/* KEYS */
 let keys = JSON.parse(localStorage.getItem("keys")||"{}");
 
 /* REDEEM */
@@ -199,7 +196,15 @@ function redeem(){
         return;
     }
 
-    localStorage.setItem("expiresAt", Date.now() + keys[v]*1000);
+    // Restore remaining time if user already had one saved
+    let remaining = localStorage.getItem("remainingTime");
+    if(remaining){
+        localStorage.setItem("expiresAt", Date.now() + parseInt(remaining));
+        localStorage.removeItem("remainingTime");
+    } else {
+        localStorage.setItem("expiresAt", Date.now() + keys[v]*1000);
+    }
+
     showApp(false);
 }
 
@@ -235,25 +240,35 @@ function back(){
     app.style.display="block";
 }
 
+/* GENERATE KEYS */
 function gen(seconds){
     const key="EXEL-"+Math.random().toString(36).substring(2,6).toUpperCase()
             +"-"+Math.random().toString(36).substring(2,6).toUpperCase();
     keys[key]=seconds;
     localStorage.setItem("keys",JSON.stringify(keys));
     navigator.clipboard.writeText(key);
+
+    toast.textContent = `Copied to clipboard 📋 → ${key}`;
     toast.style.display="block";
-    setTimeout(()=>toast.style.display="none",1600);
+    setTimeout(()=>toast.style.display="none",1800);
 }
 
-/* COPY */
+/* COPY SCRIPT */
 function copyScript(btn){
     navigator.clipboard.writeText(btn.previousElementSibling.innerText);
     btn.textContent="Copied";
     setTimeout(()=>btn.textContent="Copy",1200);
 }
 
-/* LOGOUT (SAFE) */
+/* LOGOUT (SAVE REMAINING TIME) */
 function logout(){
+    const expires = +localStorage.getItem("expiresAt");
+    if(expires){
+        const remaining = expires - Date.now();
+        if(remaining>0){
+            localStorage.setItem("remainingTime", remaining);
+        }
+    }
     localStorage.removeItem("expiresAt");
     localStorage.removeItem("admin");
     location.reload();
@@ -262,7 +277,7 @@ function logout(){
 /* AUTO LOGIN */
 if(localStorage.getItem("admin")==="true"){
     showApp(true);
-} else if(localStorage.getItem("expiresAt")){
+} else if(localStorage.getItem("expiresAt") || localStorage.getItem("remainingTime")){
     showApp(false);
 }
 </script>
