@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ExelNotifier</title>
-
 <style>
 :root{
     --bg:#020617;
@@ -126,10 +125,47 @@ button:hover{box-shadow:0 0 20px rgba(56,189,248,.45)}
     display:none;
     text-align:center;
     font-size:.9em;
+    word-break:break-word;
+}
+
+#adminPanel{
+    display:none;
+    margin-top:14px;
+    background:rgba(2,6,23,.8);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:14px;
+    max-height:300px;
+    overflow-y:auto;
+}
+
+.key-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:8px;
+    padding:6px 8px;
+    border-radius:8px;
+    background:rgba(56,189,248,.05);
+}
+.key-item button{
+    background:#ef4444;
+    color:white;
+    font-weight:500;
+    padding:4px 6px;
+    font-size:.75em;
+}
+.key-item input{
+    width:60px;
+    padding:2px 4px;
+    border-radius:6px;
+    border:1px solid var(--border);
+    margin-left:4px;
+    font-size:.75em;
+    text-align:center;
 }
 </style>
 </head>
-
 <body>
 
 <!-- LOGIN -->
@@ -147,10 +183,12 @@ button:hover{box-shadow:0 0 20px rgba(56,189,248,.45)}
         <div class="pill">
             ⏳ Time remaining: <b id="timeLeft">--:--:--</b>
         </div>
-        <button id="adminBtn" class="pill admin-pill" style="display:none;" onclick="openAdmin()">
+        <button id="adminBtn" class="pill admin-pill" style="display:none;" onclick="toggleAdminPanel()">
             Admin Dashboard
         </button>
     </div>
+
+    <div id="adminPanel"></div>
 
     <div class="copy-box">
         <span>
@@ -162,125 +200,139 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/exelscripts/joiner/re
     <button class="full logout" onclick="logout()">Logout</button>
 </div>
 
-<!-- ADMIN -->
-<div class="card" id="admin" style="display:none;">
-    <div class="toast" id="toast">Copied to clipboard 📋</div>
-    <h2>Admin Dashboard</h2>
-
-    <button class="full" onclick="gen(3600)">Generate 1 Hour Key</button>
-    <button class="full" onclick="gen(7200)">Generate 2 Hour Key</button>
-    <button class="full" onclick="gen(10800)">Generate 3 Hour Key</button>
-    <button class="full" onclick="gen(14400)">Generate 4 Hour Key</button>
-    <button class="full" onclick="gen(86400)">Generate 1 Day Key</button>
-    <button class="full" onclick="gen(604800)">Generate 1 Week Key</button>
-
-    <button class="full logout" onclick="back()">Back</button>
-</div>
-
 <script>
 const ADMIN_KEY = "EXEL-ADMIN-2704";
 let keys = JSON.parse(localStorage.getItem("keys")||"{}");
+let activeKeys = JSON.parse(localStorage.getItem("activeKeys")||"{}");
 
-/* REDEEM */
+// REDEEM KEY
 function redeem(){
     const v = keyInput.value.trim().toUpperCase();
-
-    if(v === ADMIN_KEY){
+    if(v===ADMIN_KEY){
         localStorage.setItem("admin","true");
         showApp(true);
         return;
     }
-
     if(!keys[v]){
         alert("Invalid license key");
         return;
     }
-
-    // Restore remaining time if user already had one saved
-    let remaining = localStorage.getItem("remainingTime");
-    if(remaining){
-        localStorage.setItem("expiresAt", Date.now() + parseInt(remaining));
-        localStorage.removeItem("remainingTime");
-    } else {
-        localStorage.setItem("expiresAt", Date.now() + keys[v]*1000);
-    }
-
+    // calculate remaining
+    let now = Date.now();
+    let remaining = activeKeys[v] ? activeKeys[v]-now : keys[v]*1000;
+    let expiresAt = now + remaining;
+    activeKeys[v] = expiresAt;
+    localStorage.setItem("activeKeys", JSON.stringify(activeKeys));
+    localStorage.setItem("currentKey", v);
     showApp(false);
 }
 
-/* APP */
+// SHOW APP
 function showApp(admin){
     login.style.display="none";
     app.style.display="block";
-    adminBtn.style.display = admin ? "flex" : "none";
-
+    adminBtn.style.display=admin?"flex":"none";
     if(admin){
         timeLeft.textContent="inf ♾️";
     } else {
         tick();
     }
+    if(admin) renderAdminPanel();
 }
 
+// TIMER
 function tick(){
-    const expires = +localStorage.getItem("expiresAt");
-    const left = Math.floor((expires-Date.now())/1000);
-    if(left<=0){ logout(); return; }
-    timeLeft.textContent=new Date(left*1000).toISOString().substr(11,8);
+    let currentKey = localStorage.getItem("currentKey");
+    if(!currentKey) return;
+    let expires = activeKeys[currentKey];
+    let left = Math.floor((expires-Date.now())/1000);
+    if(left<=0){
+        delete activeKeys[currentKey];
+        localStorage.setItem("activeKeys", JSON.stringify(activeKeys));
+        alert("Your key expired!");
+        logout();
+        return;
+    }
+    let h = Math.floor(left/3600);
+    let m = Math.floor((left%3600)/60);
+    let s = left%60;
+    timeLeft.textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
     setTimeout(tick,1000);
 }
 
-/* ADMIN */
-function openAdmin(){
-    app.style.display="none";
-    admin.style.display="block";
-}
-
-function back(){
-    admin.style.display="none";
-    app.style.display="block";
-}
-
-/* GENERATE KEYS */
-function gen(seconds){
-    const key="EXEL-"+Math.random().toString(36).substring(2,6).toUpperCase()
-            +"-"+Math.random().toString(36).substring(2,6).toUpperCase();
-    keys[key]=seconds;
-    localStorage.setItem("keys",JSON.stringify(keys));
-    navigator.clipboard.writeText(key);
-
-    toast.textContent = `Copied to clipboard 📋 → ${key}`;
-    toast.style.display="block";
-    setTimeout(()=>toast.style.display="none",1800);
-}
-
-/* COPY SCRIPT */
+// COPY SCRIPT
 function copyScript(btn){
     navigator.clipboard.writeText(btn.previousElementSibling.innerText);
     btn.textContent="Copied";
     setTimeout(()=>btn.textContent="Copy",1200);
 }
 
-/* LOGOUT (SAVE REMAINING TIME) */
+// LOGOUT
 function logout(){
-    const expires = +localStorage.getItem("expiresAt");
-    if(expires){
-        const remaining = expires - Date.now();
-        if(remaining>0){
-            localStorage.setItem("remainingTime", remaining);
-        }
-    }
-    localStorage.removeItem("expiresAt");
-    localStorage.removeItem("admin");
     location.reload();
 }
 
-/* AUTO LOGIN */
+// ADMIN PANEL
+function toggleAdminPanel(){
+    let panel = document.getElementById("adminPanel");
+    if(panel.style.display==="none" || panel.style.display===""){
+        renderAdminPanel();
+        panel.style.display="block";
+    } else panel.style.display="none";
+}
+
+function renderAdminPanel(){
+    let panel = document.getElementById("adminPanel");
+    panel.innerHTML = "";
+    if(Object.keys(activeKeys).length===0){
+        panel.innerHTML="<i>No active keys</i>";
+        return;
+    }
+    Object.keys(activeKeys).forEach(k=>{
+        let keyDiv = document.createElement("div");
+        keyDiv.className="key-item";
+        let expire = Math.max(0, activeKeys[k]-Date.now());
+        let h = Math.floor(expire/3600000);
+        let m = Math.floor((expire%3600000)/60000);
+        let s = Math.floor((expire%60000)/1000);
+        keyDiv.innerHTML=`<span>${k} - ${h}h ${m}m ${s}s</span>`;
+        let banBtn = document.createElement("button");
+        banBtn.textContent="Ban";
+        banBtn.onclick=()=>{ delete activeKeys[k]; delete keys[k]; localStorage.setItem("activeKeys",JSON.stringify(activeKeys)); localStorage.setItem("keys",JSON.stringify(keys)); renderAdminPanel(); };
+        keyDiv.appendChild(banBtn);
+
+        let addInput = document.createElement("input");
+        addInput.placeholder="+sec";
+        keyDiv.appendChild(addInput);
+        let addBtn = document.createElement("button");
+        addBtn.textContent="+";
+        addBtn.onclick=()=>{
+            let val = parseInt(addInput.value);
+            if(!isNaN(val)) { activeKeys[k] += val*1000; localStorage.setItem("activeKeys",JSON.stringify(activeKeys)); renderAdminPanel(); }
+        };
+        keyDiv.appendChild(addBtn);
+
+        let subInput = document.createElement("input");
+        subInput.placeholder="-sec";
+        keyDiv.appendChild(subInput);
+        let subBtn = document.createElement("button");
+        subBtn.textContent="-";
+        subBtn.onclick=()=>{
+            let val = parseInt(subInput.value);
+            if(!isNaN(val)) { activeKeys[k] -= val*1000; if(activeKeys[k]<Date.now()){ delete activeKeys[k]; delete keys[k]; } localStorage.setItem("activeKeys",JSON.stringify(activeKeys)); localStorage.setItem("keys",JSON.stringify(keys)); renderAdminPanel(); }
+        };
+        keyDiv.appendChild(subBtn);
+
+        panel.appendChild(keyDiv);
+    });
+}
+
+// AUTO LOGIN
 if(localStorage.getItem("admin")==="true"){
     showApp(true);
-} else if(localStorage.getItem("expiresAt") || localStorage.getItem("remainingTime")){
+} else if(localStorage.getItem("currentKey") && activeKeys[localStorage.getItem("currentKey")]){
     showApp(false);
 }
 </script>
-
 </body>
 </html>
