@@ -12,9 +12,7 @@
     --accent:#38bdf8;
     --text:#e5e7eb;
 }
-
 *{box-sizing:border-box}
-
 body{
     margin:0;
     min-height:100vh;
@@ -25,7 +23,6 @@ body{
     align-items:center;
     color:var(--text);
 }
-
 .card{
     width:94%;
     max-width:560px;
@@ -36,9 +33,7 @@ body{
     padding:30px;
     box-shadow:0 25px 50px rgba(0,0,0,.65);
 }
-
 h2{margin:0 0 14px;color:#7dd3fc;font-size:1.2em}
-
 input{
     width:100%;
     max-width:420px;
@@ -52,7 +47,6 @@ input{
     color:var(--text);
     text-align:center;
 }
-
 button{
     padding:12px 14px;
     border-radius:12px;
@@ -62,18 +56,14 @@ button{
     font-weight:700;
     cursor:pointer;
 }
-
 button:hover{box-shadow:0 0 20px rgba(56,189,248,.45)}
-
 .full{width:100%;margin-top:16px}
-
 .row{
     display:flex;
     gap:12px;
     margin-top:14px;
     align-items:stretch;
 }
-
 .pill{
     flex:1;
     padding:14px;
@@ -86,12 +76,10 @@ button:hover{box-shadow:0 0 20px rgba(56,189,248,.45)}
     justify-content:center;
     text-align:center;
 }
-
 .admin-pill{
     background:rgba(56,189,248,.12);
     color:#7dd3fc;
 }
-
 .copy-box{
     margin-top:18px;
     display:flex;
@@ -101,20 +89,17 @@ button:hover{box-shadow:0 0 20px rgba(56,189,248,.45)}
     padding:14px;
     border-radius:14px;
 }
-
 .copy-box span{
     flex:1;
     font-size:.8em;
     color:#7dd3fc;
     word-break:break-all;
 }
-
 .logout{
     margin-top:18px;
     background:#ef4444;
     color:white;
 }
-
 .toast{
     margin-bottom:12px;
     padding:10px;
@@ -127,7 +112,6 @@ button:hover{box-shadow:0 0 20px rgba(56,189,248,.45)}
     font-size:.9em;
     word-break:break-word;
 }
-
 #adminPanel{
     display:none;
     margin-top:14px;
@@ -138,7 +122,6 @@ button:hover{box-shadow:0 0 20px rgba(56,189,248,.45)}
     max-height:300px;
     overflow-y:auto;
 }
-
 .key-item{
     display:flex;
     justify-content:space-between;
@@ -188,6 +171,7 @@ button:hover{box-shadow:0 0 20px rgba(56,189,248,.45)}
         </button>
     </div>
 
+    <div class="toast" id="toast">Copied to clipboard 📋</div>
     <div id="adminPanel"></div>
 
     <div class="copy-box">
@@ -201,13 +185,13 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/exelscripts/joiner/re
 </div>
 
 <script>
-const ADMIN_KEY = "EXEL-ADMIN-2704";
-let keys = JSON.parse(localStorage.getItem("keys")||"{}");
-let activeKeys = JSON.parse(localStorage.getItem("activeKeys")||"{}");
+const ADMIN_KEY="EXEL-ADMIN-2704";
+let keys=JSON.parse(localStorage.getItem("keys")||"{}");
+let activeKeys=JSON.parse(localStorage.getItem("activeKeys")||"{}");
 
 // REDEEM KEY
 function redeem(){
-    const v = keyInput.value.trim().toUpperCase();
+    const v=keyInput.value.trim().toUpperCase();
     if(v===ADMIN_KEY){
         localStorage.setItem("admin","true");
         showApp(true);
@@ -217,13 +201,12 @@ function redeem(){
         alert("Invalid license key");
         return;
     }
-    // calculate remaining
-    let now = Date.now();
-    let remaining = activeKeys[v] ? activeKeys[v]-now : keys[v]*1000;
-    let expiresAt = now + remaining;
-    activeKeys[v] = expiresAt;
-    localStorage.setItem("activeKeys", JSON.stringify(activeKeys));
-    localStorage.setItem("currentKey", v);
+    let now=Date.now();
+    let remaining=activeKeys[v]?activeKeys[v]-now:keys[v]*1000;
+    let expiresAt=now+remaining;
+    activeKeys[v]=expiresAt;
+    localStorage.setItem("activeKeys",JSON.stringify(activeKeys));
+    localStorage.setItem("currentKey",v);
     showApp(false);
 }
 
@@ -242,21 +225,21 @@ function showApp(admin){
 
 // TIMER
 function tick(){
-    let currentKey = localStorage.getItem("currentKey");
+    let currentKey=localStorage.getItem("currentKey");
     if(!currentKey) return;
-    let expires = activeKeys[currentKey];
-    let left = Math.floor((expires-Date.now())/1000);
+    let expires=activeKeys[currentKey];
+    let left=Math.floor((expires-Date.now())/1000);
     if(left<=0){
         delete activeKeys[currentKey];
-        localStorage.setItem("activeKeys", JSON.stringify(activeKeys));
+        localStorage.setItem("activeKeys",JSON.stringify(activeKeys));
         alert("Your key expired!");
         logout();
         return;
     }
-    let h = Math.floor(left/3600);
-    let m = Math.floor((left%3600)/60);
-    let s = left%60;
-    timeLeft.textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    let h=Math.floor(left/3600);
+    let m=Math.floor((left%3600)/60);
+    let s=left%60;
+    timeLeft.textContent=`${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
     setTimeout(tick,1000);
 }
 
@@ -269,70 +252,89 @@ function copyScript(btn){
 
 // LOGOUT
 function logout(){
+    localStorage.removeItem("currentKey");
+    localStorage.removeItem("admin");
     location.reload();
 }
 
 // ADMIN PANEL
 function toggleAdminPanel(){
-    let panel = document.getElementById("adminPanel");
-    if(panel.style.display==="none" || panel.style.display===""){
+    let panel=document.getElementById("adminPanel");
+    if(panel.style.display==="none"||panel.style.display===""){
         renderAdminPanel();
         panel.style.display="block";
-    } else panel.style.display="none";
+    }else panel.style.display="none";
 }
 
 function renderAdminPanel(){
-    let panel = document.getElementById("adminPanel");
-    panel.innerHTML = "";
+    let panel=document.getElementById("adminPanel");
+    panel.innerHTML="";
+
+    // Generator buttons
+    let durations=[{label:"1 Hour",sec:3600},{label:"2 Hour",sec:7200},{label:"3 Hour",sec:10800},{label:"4 Hour",sec:14400},{label:"1 Day",sec:86400},{label:"1 Week",sec:604800}];
+    durations.forEach(d=>{
+        let btn=document.createElement("button");
+        btn.className="full";
+        btn.style.marginTop="4px";
+        btn.textContent=`Generate ${d.label} Key`;
+        btn.onclick=()=>gen(d.sec);
+        panel.appendChild(btn);
+    });
+
+    panel.appendChild(document.createElement("hr"));
+
     if(Object.keys(activeKeys).length===0){
-        panel.innerHTML="<i>No active keys</i>";
+        panel.innerHTML+="<i>No active keys</i>";
         return;
     }
+
     Object.keys(activeKeys).forEach(k=>{
-        let keyDiv = document.createElement("div");
+        let keyDiv=document.createElement("div");
         keyDiv.className="key-item";
-        let expire = Math.max(0, activeKeys[k]-Date.now());
-        let h = Math.floor(expire/3600000);
-        let m = Math.floor((expire%3600000)/60000);
-        let s = Math.floor((expire%60000)/1000);
+        let expire=Math.max(0,activeKeys[k]-Date.now());
+        let h=Math.floor(expire/3600000);
+        let m=Math.floor((expire%3600000)/60000);
+        let s=Math.floor((expire%60000)/1000);
         keyDiv.innerHTML=`<span>${k} - ${h}h ${m}m ${s}s</span>`;
-        let banBtn = document.createElement("button");
+
+        // Ban button
+        let banBtn=document.createElement("button");
         banBtn.textContent="Ban";
-        banBtn.onclick=()=>{ delete activeKeys[k]; delete keys[k]; localStorage.setItem("activeKeys",JSON.stringify(activeKeys)); localStorage.setItem("keys",JSON.stringify(keys)); renderAdminPanel(); };
+        banBtn.onclick=()=>{delete activeKeys[k]; delete keys[k]; localStorage.setItem("activeKeys",JSON.stringify(activeKeys)); localStorage.setItem("keys",JSON.stringify(keys)); renderAdminPanel();};
         keyDiv.appendChild(banBtn);
 
-        let addInput = document.createElement("input");
-        addInput.placeholder="+sec";
+        // Add time
+        let addInput=document.createElement("input"); addInput.placeholder="+sec";
         keyDiv.appendChild(addInput);
-        let addBtn = document.createElement("button");
-        addBtn.textContent="+";
-        addBtn.onclick=()=>{
-            let val = parseInt(addInput.value);
-            if(!isNaN(val)) { activeKeys[k] += val*1000; localStorage.setItem("activeKeys",JSON.stringify(activeKeys)); renderAdminPanel(); }
-        };
+        let addBtn=document.createElement("button"); addBtn.textContent="+";
+        addBtn.onclick=()=>{let val=parseInt(addInput.value); if(!isNaN(val)){activeKeys[k]+=val*1000; localStorage.setItem("activeKeys",JSON.stringify(activeKeys)); renderAdminPanel();}};
         keyDiv.appendChild(addBtn);
 
-        let subInput = document.createElement("input");
-        subInput.placeholder="-sec";
+        // Subtract time
+        let subInput=document.createElement("input"); subInput.placeholder="-sec";
         keyDiv.appendChild(subInput);
-        let subBtn = document.createElement("button");
-        subBtn.textContent="-";
-        subBtn.onclick=()=>{
-            let val = parseInt(subInput.value);
-            if(!isNaN(val)) { activeKeys[k] -= val*1000; if(activeKeys[k]<Date.now()){ delete activeKeys[k]; delete keys[k]; } localStorage.setItem("activeKeys",JSON.stringify(activeKeys)); localStorage.setItem("keys",JSON.stringify(keys)); renderAdminPanel(); }
-        };
+        let subBtn=document.createElement("button"); subBtn.textContent="-";
+        subBtn.onclick=()=>{let val=parseInt(subInput.value); if(!isNaN(val)){activeKeys[k]-=val*1000; if(activeKeys[k]<Date.now()){delete activeKeys[k]; delete keys[k];} localStorage.setItem("activeKeys",JSON.stringify(activeKeys)); localStorage.setItem("keys",JSON.stringify(keys)); renderAdminPanel();}};
         keyDiv.appendChild(subBtn);
 
         panel.appendChild(keyDiv);
     });
 }
 
-// AUTO LOGIN
-if(localStorage.getItem("admin")==="true"){
-    showApp(true);
-} else if(localStorage.getItem("currentKey") && activeKeys[localStorage.getItem("currentKey")]){
-    showApp(false);
+// GENERATE KEY
+function gen(seconds){
+    const key="EXEL-"+Math.random().toString(36).substring(2,6).toUpperCase()+"-"+Math.random().toString(36).substring(2,6).toUpperCase();
+    keys[key]=seconds;
+    localStorage.setItem("keys",JSON.stringify(keys));
+    navigator.clipboard.writeText(key);
+    toast.textContent=`Copied to clipboard 📋 → ${key}`;
+    toast.style.display="block";
+    setTimeout(()=>toast.style.display="none",1800);
 }
+
+// AUTO LOGIN
+if(localStorage.getItem("admin")==="true"){showApp(true);}
+else if(localStorage.getItem("currentKey") && activeKeys[localStorage.getItem("currentKey")]){showApp(false);}
 </script>
 </body>
 </html>
