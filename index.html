@@ -115,37 +115,6 @@ button:hover{box-shadow:0 0 20px rgba(56,189,248,.45)}
 #adminPanel{
     display:none;
     margin-top:14px;
-    background:rgba(2,6,23,.8);
-    border:1px solid var(--border);
-    border-radius:14px;
-    padding:14px;
-    max-height:300px;
-    overflow-y:auto;
-}
-.key-item{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:8px;
-    padding:6px 8px;
-    border-radius:8px;
-    background:rgba(56,189,248,.05);
-}
-.key-item button{
-    background:#ef4444;
-    color:white;
-    font-weight:500;
-    padding:4px 6px;
-    font-size:.75em;
-}
-.key-item input{
-    width:60px;
-    padding:2px 4px;
-    border-radius:6px;
-    border:1px solid var(--border);
-    margin-left:4px;
-    font-size:.75em;
-    text-align:center;
 }
 </style>
 </head>
@@ -203,8 +172,8 @@ function redeem(){
     }
     let now=Date.now();
     let remaining=activeKeys[v]?activeKeys[v]-now:keys[v]*1000;
-    let expiresAt=now+remaining;
-    activeKeys[v]=expiresAt;
+    if(remaining<=0){alert("This key has expired!"); return;}
+    activeKeys[v]=now+remaining;
     localStorage.setItem("activeKeys",JSON.stringify(activeKeys));
     localStorage.setItem("currentKey",v);
     showApp(false);
@@ -215,11 +184,8 @@ function showApp(admin){
     login.style.display="none";
     app.style.display="block";
     adminBtn.style.display=admin?"flex":"none";
-    if(admin){
-        timeLeft.textContent="inf ♾️";
-    } else {
-        tick();
-    }
+    if(admin){ timeLeft.textContent="inf ♾️"; }
+    else { tick(); }
     if(admin) renderAdminPanel();
 }
 
@@ -245,9 +211,15 @@ function tick(){
 
 // COPY SCRIPT
 function copyScript(btn){
-    navigator.clipboard.writeText(btn.previousElementSibling.innerText);
-    btn.textContent="Copied";
-    setTimeout(()=>btn.textContent="Copy",1200);
+    navigator.clipboard.writeText(btn.previousElementSibling.innerText)
+    .then(()=>{
+        const toast=document.getElementById("toast");
+        toast.textContent="Copied to clipboard 📋";
+        toast.style.display="block";
+        setTimeout(()=>toast.style.display="none",1200);
+    }).catch(err=>{
+        alert("Copy failed!");
+    });
 }
 
 // LOGOUT
@@ -269,9 +241,15 @@ function toggleAdminPanel(){
 function renderAdminPanel(){
     let panel=document.getElementById("adminPanel");
     panel.innerHTML="";
-
     // Generator buttons
-    let durations=[{label:"1 Hour",sec:3600},{label:"2 Hour",sec:7200},{label:"3 Hour",sec:10800},{label:"4 Hour",sec:14400},{label:"1 Day",sec:86400},{label:"1 Week",sec:604800}];
+    let durations=[
+        {label:"1 Hour",sec:3600},
+        {label:"2 Hour",sec:7200},
+        {label:"3 Hour",sec:10800},
+        {label:"4 Hour",sec:14400},
+        {label:"1 Day",sec:86400},
+        {label:"1 Week",sec:604800}
+    ];
     durations.forEach(d=>{
         let btn=document.createElement("button");
         btn.className="full";
@@ -279,67 +257,6 @@ function renderAdminPanel(){
         btn.textContent=`Generate ${d.label} Key`;
         btn.onclick=()=>gen(d.sec);
         panel.appendChild(btn);
-    });
-
-    panel.appendChild(document.createElement("hr"));
-
-    if(Object.keys(activeKeys).length===0){
-        panel.innerHTML+="<i>No active keys</i>";
-        return;
-    }
-
-    Object.keys(activeKeys).forEach(k=>{
-        let keyDiv=document.createElement("div");
-        keyDiv.className="key-item";
-        let expire=Math.max(0,activeKeys[k]-Date.now());
-        let h=Math.floor(expire/3600000);
-        let m=Math.floor((expire%3600000)/60000);
-        let s=Math.floor((expire%60000)/1000);
-        keyDiv.innerHTML=`<span>${k} - ${h}h ${m}m ${s}s</span>`;
-
-        // Ban button
-        let banBtn=document.createElement("button");
-        banBtn.textContent="Ban";
-        banBtn.onclick=()=>{
-            delete activeKeys[k];
-            delete keys[k];
-            localStorage.setItem("activeKeys",JSON.stringify(activeKeys));
-            localStorage.setItem("keys",JSON.stringify(keys));
-            renderAdminPanel();
-        };
-        keyDiv.appendChild(banBtn);
-
-        // Add time
-        let addInput=document.createElement("input"); addInput.placeholder="+sec";
-        keyDiv.appendChild(addInput);
-        let addBtn=document.createElement("button"); addBtn.textContent="+";
-        addBtn.onclick=()=>{
-            let val=parseInt(addInput.value);
-            if(!isNaN(val)){
-                activeKeys[k]+=val*1000;
-                localStorage.setItem("activeKeys",JSON.stringify(activeKeys));
-                renderAdminPanel();
-            }
-        };
-        keyDiv.appendChild(addBtn);
-
-        // Subtract time
-        let subInput=document.createElement("input"); subInput.placeholder="-sec";
-        keyDiv.appendChild(subInput);
-        let subBtn=document.createElement("button"); subBtn.textContent="-";
-        subBtn.onclick=()=>{
-            let val=parseInt(subInput.value);
-            if(!isNaN(val)){
-                activeKeys[k]-=val*1000;
-                if(activeKeys[k]<Date.now()){delete activeKeys[k]; delete keys[k];}
-                localStorage.setItem("activeKeys",JSON.stringify(activeKeys));
-                localStorage.setItem("keys",JSON.stringify(keys));
-                renderAdminPanel();
-            }
-        };
-        keyDiv.appendChild(subBtn);
-
-        panel.appendChild(keyDiv);
     });
 }
 
@@ -351,24 +268,19 @@ function gen(seconds){
     localStorage.setItem("keys",JSON.stringify(keys));
     localStorage.setItem("activeKeys",JSON.stringify(activeKeys));
 
-    // Copy first, before doing anything else
+    // Copy to clipboard first
     navigator.clipboard.writeText(key).then(()=>{
         const toast=document.getElementById("toast");
         toast.textContent=`Copied to clipboard 📋 → ${key}`;
         toast.style.display="block";
         setTimeout(()=>toast.style.display="none",1800);
-    }).catch(err=>{
-        alert("Copy failed! Key: "+key);
-    });
-}
-
+    }).catch(()=>{alert("Copy failed! Key: "+key);});
 }
 
 // AUTO LOGIN
-if(localStorage.getItem("admin")==="true"){showApp(true);}
-else if(localStorage.getItem("currentKey") && activeKeys[localStorage.getItem("currentKey")]){showApp(false);}
+if(localStorage.getItem("admin")==="true"){ showApp(true); }
+else if(localStorage.getItem("currentKey") && activeKeys[localStorage.getItem("currentKey")]){ showApp(false); }
+
 </script>
 </body>
 </html>
-
-
