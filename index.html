@@ -2,285 +2,269 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ExelNotifier</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-:root{
-    --bg:#020617;
-    --card:rgba(15,23,42,.78);
-    --border:rgba(56,189,248,.4);
-    --accent:#38bdf8;
-    --text:#e5e7eb;
-}
-*{box-sizing:border-box}
 body{
-    margin:0;
-    min-height:100vh;
-    font-family:system-ui,sans-serif;
-    background:radial-gradient(circle at top,#0f172a,transparent 60%),#020617;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    color:var(--text);
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:system-ui,sans-serif;
+  background:linear-gradient(135deg,#020617,#020617 40%,#0f172a);
+  color:#e5e7eb;
 }
 .card{
-    width:94%;
-    max-width:560px;
-    background:var(--card);
-    border:1px solid var(--border);
-    backdrop-filter:blur(14px);
-    border-radius:20px;
-    padding:30px;
-    box-shadow:0 25px 50px rgba(0,0,0,.65);
+  width:92%;
+  max-width:520px;
+  background:rgba(15,23,42,.75);
+  backdrop-filter:blur(16px);
+  border:1px solid rgba(56,189,248,.35);
+  border-radius:20px;
+  padding:26px;
+  box-shadow:0 30px 60px rgba(0,0,0,.6);
 }
-h2{margin:0 0 14px;color:#7dd3fc;font-size:1.2em}
+h2{margin:0 0 16px;color:#7dd3fc}
 input{
-    width:100%;
-    max-width:420px;
-    margin:0 auto;
-    display:block;
-    padding:13px 14px;
-    font-size:.98em;
-    border-radius:12px;
-    background:rgba(2,6,23,.85);
-    border:1px solid var(--border);
-    color:var(--text);
-    text-align:center;
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid rgba(56,189,248,.35);
+  background:rgba(2,6,23,.9);
+  color:white;
+  text-align:center;
+  font-size:1em;
 }
 button{
-    padding:12px 14px;
-    border-radius:12px;
-    border:none;
-    background:linear-gradient(135deg,#38bdf8,#60a5fa);
-    color:#020617;
-    font-weight:700;
-    cursor:pointer;
+  width:100%;
+  margin-top:14px;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(135deg,#38bdf8,#60a5fa);
+  color:#020617;
+  font-weight:700;
+  cursor:pointer;
 }
-button:hover{box-shadow:0 0 20px rgba(56,189,248,.45)}
-.full{width:100%;margin-top:16px}
-.row{
-    display:flex;
-    gap:12px;
-    margin-top:14px;
-    align-items:stretch;
-}
+button:hover{box-shadow:0 0 20px rgba(56,189,248,.5)}
+.row{display:flex;gap:12px;margin-top:14px}
 .pill{
-    flex:1;
-    padding:14px;
-    border-radius:14px;
-    background:rgba(2,6,23,.8);
-    border:1px solid var(--border);
-    font-size:.95em;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
+  flex:1;
+  padding:14px;
+  border-radius:14px;
+  background:rgba(2,6,23,.8);
+  border:1px solid rgba(56,189,248,.35);
+  text-align:center;
 }
-.admin-pill{
-    background:rgba(56,189,248,.12);
-    color:#7dd3fc;
+.admin-btn{
+  background:rgba(56,189,248,.15);
+  color:#7dd3fc;
+  cursor:pointer;
 }
 .copy-box{
-    margin-top:18px;
-    display:flex;
-    gap:10px;
-    background:rgba(2,6,23,.8);
-    border:1px solid var(--border);
-    padding:14px;
-    border-radius:14px;
+  display:flex;
+  gap:10px;
+  margin-top:18px;
+  padding:14px;
+  border-radius:14px;
+  background:rgba(2,6,23,.85);
+  border:1px solid rgba(56,189,248,.35);
 }
 .copy-box span{
-    flex:1;
-    font-size:.8em;
-    color:#7dd3fc;
-    word-break:break-all;
+  flex:1;
+  font-size:.8em;
+  color:#7dd3fc;
+  word-break:break-all;
 }
 .logout{
-    margin-top:18px;
-    background:#ef4444;
-    color:white;
+  background:#ef4444;
+  color:white;
 }
 .toast{
-    margin-bottom:12px;
-    padding:10px;
-    border-radius:10px;
-    background:rgba(34,197,94,.15);
-    border:1px solid rgba(34,197,94,.5);
-    color:#bbf7d0;
-    display:none;
-    text-align:center;
-    font-size:.9em;
-    word-break:break-word;
+  display:none;
+  margin-bottom:12px;
+  padding:10px;
+  border-radius:10px;
+  background:rgba(34,197,94,.15);
+  border:1px solid rgba(34,197,94,.5);
+  color:#bbf7d0;
+  text-align:center;
+  font-size:.9em;
 }
-#adminPanel{
-    display:none;
-    margin-top:14px;
-}
+#adminPanel{display:none;margin-top:14px}
 </style>
 </head>
+
 <body>
 
 <!-- LOGIN -->
 <div class="card" id="login">
-    <h2>Enter License Key</h2>
-    <input id="keyInput" placeholder="EXEL-XH-XXXX-XXXX">
-    <button class="full" onclick="redeem()">Redeem</button>
+  <h2>Enter License Key</h2>
+  <input id="keyInput" placeholder="EXEL-XXXX-XXXX">
+  <button onclick="redeem()">Redeem</button>
 </div>
 
 <!-- APP -->
-<div class="card" id="app" style="display:none;">
-    <h2>exel hub finder paid, find brainrots INSTANTLY ⚡⏩</h2>
+<div class="card" id="app" style="display:none">
+  <h2>exel hub finder paid, find brainrots INSTANTLY ⚡⏩</h2>
 
-    <div class="row">
-        <div class="pill">
-            ⏳ Time remaining: <b id="timeLeft">--:--:--</b>
-        </div>
-        <button id="adminBtn" class="pill admin-pill" style="display:none;" onclick="toggleAdminPanel()">
-            Admin Dashboard
-        </button>
+  <div class="row">
+    <div class="pill">
+      ⏳ Time remaining: <b id="timeLeft">--:--:--</b>
     </div>
+    <div id="adminBtn" class="pill admin-btn" onclick="toggleAdmin()" style="display:none">
+      Admin Dashboard
+    </div>
+  </div>
 
-    <div class="toast" id="toast">Copied to clipboard 📋</div>
-    <div id="adminPanel"></div>
+  <div class="toast" id="toast"></div>
 
-    <div class="copy-box">
-        <span>
+  <div id="adminPanel"></div>
+
+  <div class="copy-box">
+    <span>
 loadstring(game:HttpGet("https://raw.githubusercontent.com/exelscripts/joiner/refs/heads/main/exel"))()
-        </span>
-        <button onclick="copyScript(this)">Copy</button>
-    </div>
+    </span>
+    <button onclick="copyScript()">Copy</button>
+  </div>
 
-    <button class="full logout" onclick="logout()">Logout</button>
+  <button class="logout" onclick="logout()">Logout</button>
 </div>
 
 <script>
-const ADMIN_KEY="EXEL-ADMIN-2704";
-let keys=JSON.parse(localStorage.getItem("keys")||"{}");
-let activeKeys=JSON.parse(localStorage.getItem("activeKeys")||"{}");
+/* ================= CONFIG ================= */
+const SUPABASE_URL = "https://skdhrvgrpcuvvfedkinc.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNrZGhydmdycGN1dnZmZWRraW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5Mzk2MzMsImV4cCI6MjA4NTUxNTYzM30.YAZhwmjIrnqJfl-zVT6_a7zGDITbr6twMYCBoo_bbhs";
+const ADMIN_KEY = "EXEL-ADMIN-2704";
 
-// REDEEM KEY
-function redeem(){
-    const v=keyInput.value.trim().toUpperCase();
-    if(v===ADMIN_KEY){
-        localStorage.setItem("admin","true");
-        showApp(true);
-        return;
+/* ================= LOGIN ================= */
+async function redeem(){
+  const key = keyInput.value.trim().toUpperCase();
+  if(!key) return;
+
+  if(key === ADMIN_KEY){
+    localStorage.setItem("admin","1");
+    showApp(true);
+    return;
+  }
+
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/licenses?key=eq.${key}&is_banned=eq.false`,
+    {
+      headers:{
+        apikey:SUPABASE_KEY,
+        Authorization:`Bearer ${SUPABASE_KEY}`
+      }
     }
-    if(!keys[v]){
-        alert("Invalid license key");
-        return;
-    }
-    let now=Date.now();
-    let remaining=activeKeys[v]?activeKeys[v]-now:keys[v]*1000;
-    if(remaining<=0){alert("This key has expired!"); return;}
-    activeKeys[v]=now+remaining;
-    localStorage.setItem("activeKeys",JSON.stringify(activeKeys));
-    localStorage.setItem("currentKey",v);
-    showApp(false);
+  );
+
+  const data = await res.json();
+  if(!data.length){ alert("Invalid key"); return; }
+
+  const lic = data[0];
+  if(Date.now() >= lic.expires_at){ alert("Key expired"); return; }
+
+  localStorage.setItem("key", key);
+  localStorage.setItem("expires", lic.expires_at);
+  showApp(false);
 }
 
-// SHOW APP
+/* ================= APP ================= */
 function showApp(admin){
-    login.style.display="none";
-    app.style.display="block";
-    adminBtn.style.display=admin?"flex":"none";
-    if(admin){ timeLeft.textContent="inf ♾️"; }
-    else { tick(); }
-    if(admin) renderAdminPanel();
+  login.style.display="none";
+  app.style.display="block";
+  adminBtn.style.display = admin ? "flex":"none";
+
+  if(admin){
+    timeLeft.textContent="inf ♾️";
+    renderAdmin();
+  } else {
+    startTimer();
+  }
 }
 
-// TIMER
-function tick(){
-    let currentKey=localStorage.getItem("currentKey");
-    if(!currentKey) return;
-    let expires=activeKeys[currentKey];
-    let left=Math.floor((expires-Date.now())/1000);
-    if(left<=0){
-        delete activeKeys[currentKey];
-        localStorage.setItem("activeKeys",JSON.stringify(activeKeys));
-        alert("Your key expired!");
-        logout();
-        return;
-    }
-    let h=Math.floor(left/3600);
-    let m=Math.floor((left%3600)/60);
-    let s=left%60;
-    timeLeft.textContent=`${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    setTimeout(tick,1000);
+function startTimer(){
+  const exp = parseInt(localStorage.getItem("expires"));
+  function tick(){
+    const left = Math.floor((exp - Date.now())/1000);
+    if(left <= 0){ alert("Expired"); logout(); return; }
+    const h=Math.floor(left/3600);
+    const m=Math.floor((left%3600)/60);
+    const s=left%60;
+    timeLeft.textContent =
+      `${h.toString().padStart(2,"0")}:`+
+      `${m.toString().padStart(2,"0")}:`+
+      `${s.toString().padStart(2,"0")}`;
+    requestAnimationFrame(tick);
+  }
+  tick();
 }
 
-// COPY SCRIPT
-function copyScript(btn){
-    navigator.clipboard.writeText(btn.previousElementSibling.innerText)
-    .then(()=>{
-        const toast=document.getElementById("toast");
-        toast.textContent="Copied to clipboard 📋";
-        toast.style.display="block";
-        setTimeout(()=>toast.style.display="none",1200);
-    }).catch(err=>{
-        alert("Copy failed!");
-    });
+/* ================= ADMIN ================= */
+function toggleAdmin(){
+  adminPanel.style.display =
+    adminPanel.style.display==="block"?"none":"block";
 }
 
-// LOGOUT
+function renderAdmin(){
+  adminPanel.innerHTML="";
+  const times=[
+    ["1 Hour",3600],
+    ["1 Day",86400],
+    ["1 Week",604800]
+  ];
+  times.forEach(t=>{
+    const b=document.createElement("button");
+    b.textContent="Generate "+t[0];
+    b.onclick=()=>generate(t[1]);
+    adminPanel.appendChild(b);
+  });
+}
+
+async function generate(seconds){
+  const key="EXEL-"+Math.random().toString(36).slice(2,6).toUpperCase()+"-"+Math.random().toString(36).slice(2,6).toUpperCase();
+  const expires=Date.now()+seconds*1000;
+
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/licenses`,{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      apikey:SUPABASE_KEY,
+      Authorization:`Bearer ${SUPABASE_KEY}`,
+      Prefer:"return=minimal"
+    },
+    body:JSON.stringify({ key:key, expires_at:expires })
+  });
+
+  if(!res.ok){ alert("Failed"); return; }
+
+  await navigator.clipboard.writeText(key);
+  toast.textContent="Copied to clipboard 📋 → "+key;
+  toast.style.display="block";
+  setTimeout(()=>toast.style.display="none",1600);
+}
+
+/* ================= UTILS ================= */
+function copyScript(){
+  navigator.clipboard.writeText(
+    document.querySelector(".copy-box span").innerText
+  );
+  toast.textContent="Copied to clipboard 📋";
+  toast.style.display="block";
+  setTimeout(()=>toast.style.display="none",1200);
+}
+
 function logout(){
-    localStorage.removeItem("currentKey");
-    localStorage.removeItem("admin");
-    location.reload();
+  localStorage.clear();
+  location.reload();
 }
 
-// ADMIN PANEL
-function toggleAdminPanel(){
-    let panel=document.getElementById("adminPanel");
-    if(panel.style.display==="none"||panel.style.display===""){
-        renderAdminPanel();
-        panel.style.display="block";
-    }else panel.style.display="none";
-}
-
-function renderAdminPanel(){
-    let panel=document.getElementById("adminPanel");
-    panel.innerHTML="";
-    // Generator buttons
-    let durations=[
-        {label:"1 Hour",sec:3600},
-        {label:"2 Hour",sec:7200},
-        {label:"3 Hour",sec:10800},
-        {label:"4 Hour",sec:14400},
-        {label:"1 Day",sec:86400},
-        {label:"1 Week",sec:604800}
-    ];
-    durations.forEach(d=>{
-        let btn=document.createElement("button");
-        btn.className="full";
-        btn.style.marginTop="4px";
-        btn.textContent=`Generate ${d.label} Key`;
-        btn.onclick=()=>gen(d.sec);
-        panel.appendChild(btn);
-    });
-}
-
-// GENERATE KEY
-function gen(seconds){
-    const key="EXEL-"+Math.random().toString(36).substring(2,6).toUpperCase()+"-"+Math.random().toString(36).substring(2,6).toUpperCase();
-    keys[key]=seconds;
-    activeKeys[key]=Date.now()+seconds*1000;
-    localStorage.setItem("keys",JSON.stringify(keys));
-    localStorage.setItem("activeKeys",JSON.stringify(activeKeys));
-
-    // Copy to clipboard first
-    navigator.clipboard.writeText(key).then(()=>{
-        const toast=document.getElementById("toast");
-        toast.textContent=`Copied to clipboard 📋 → ${key}`;
-        toast.style.display="block";
-        setTimeout(()=>toast.style.display="none",1800);
-    }).catch(()=>{alert("Copy failed! Key: "+key);});
-}
-
-// AUTO LOGIN
-if(localStorage.getItem("admin")==="true"){ showApp(true); }
-else if(localStorage.getItem("currentKey") && activeKeys[localStorage.getItem("currentKey")]){ showApp(false); }
-
+/* ================= AUTO LOGIN ================= */
+if(localStorage.getItem("admin")) showApp(true);
+else if(localStorage.getItem("key")) showApp(false);
 </script>
+
 </body>
 </html>
