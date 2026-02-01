@@ -16,30 +16,37 @@ body{
   background:linear-gradient(135deg,#020617,#020617 40%,#0f172a);
   color:#e5e7eb;
 }
+
 .card{
-  width:92%;
-  max-width:520px;
+  width:90%;
+  max-width:480px;
   background:rgba(15,23,42,.75);
   backdrop-filter:blur(16px);
   border:1px solid rgba(56,189,248,.35);
   border-radius:20px;
-  padding:26px;
+  padding:20px;
   box-shadow:0 30px 60px rgba(0,0,0,.6);
 }
+
 h2{margin:0 0 16px;color:#7dd3fc}
-input{
+
+/* ===== LICENSE KEY INPUT ===== */
+#keyInput {
   width:100%;
   padding:14px;
   border-radius:12px;
   border:1px solid rgba(56,189,248,.35);
   background:rgba(2,6,23,.9);
   color:white;
-  text-align:center;
   font-size:1em;
+  box-sizing:border-box;
+  margin-bottom:12px;
+  text-align:center;
 }
+
+/* ===== BUTTONS ===== */
 button{
   width:100%;
-  margin-top:14px;
   padding:14px;
   border:none;
   border-radius:12px;
@@ -48,7 +55,9 @@ button{
   font-weight:700;
   cursor:pointer;
 }
-button:hover{box-shadow:0 0 20px rgba(56,189,248,.5)}
+button:hover{box-shadow:0 0 20px rgba(56,189,248,.5);}
+
+/* ===== ROW / PILLS ===== */
 .row{display:flex;gap:12px;margin-top:14px}
 .pill{
   flex:1;
@@ -63,25 +72,43 @@ button:hover{box-shadow:0 0 20px rgba(56,189,248,.5)}
   color:#7dd3fc;
   cursor:pointer;
 }
+
+/* ===== COPY BOX ===== */
 .copy-box{
   display:flex;
-  gap:10px;
+  align-items:center;
+  gap:8px;
   margin-top:18px;
-  padding:14px;
+  padding:10px 12px;
   border-radius:14px;
   background:rgba(2,6,23,.85);
   border:1px solid rgba(56,189,248,.35);
 }
+
 .copy-box span{
   flex:1;
-  font-size:.8em;
+  font-size:.85em;
   color:#7dd3fc;
-  word-break:break-all;
+  white-space:nowrap;       
+  overflow-x:auto;          
+  text-overflow:ellipsis;
 }
+
+.copy-box button{
+  flex:0 0 auto;            
+  padding:6px 12px;         
+  font-size:.8em;
+  border-radius:10px;
+}
+
+/* ===== LOGOUT BUTTON ===== */
 .logout{
   background:#ef4444;
   color:white;
+  margin-top:14px;
 }
+
+/* ===== TOAST ===== */
 .toast{
   display:none;
   margin-bottom:12px;
@@ -93,6 +120,7 @@ button:hover{box-shadow:0 0 20px rgba(56,189,248,.5)}
   text-align:center;
   font-size:.9em;
 }
+
 #adminPanel{display:none;margin-top:14px}
 </style>
 </head>
@@ -120,7 +148,6 @@ button:hover{box-shadow:0 0 20px rgba(56,189,248,.5)}
   </div>
 
   <div class="toast" id="toast"></div>
-
   <div id="adminPanel"></div>
 
   <div class="copy-box">
