@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>ExelNotifier</title>
@@ -10,59 +10,31 @@
   --bg:#020617;
   --surface:#0f172a;
   --accent:#38bdf8;
-  --accent-hover:#60a5fa;
+  --accent2:#60a5fa;
   --text:#e5e7eb;
-}
-
-body.paused{
-  --bg:#0F172A;
-  --surface:#1E293B;
-  --accent:#10B981;
-  --accent-hover:#06402B;
-  --text:#F8FAFC;
 }
 
 body{
   margin:0;
-  font-family:system-ui,sans-serif;
+  font-family:system-ui;
   background:var(--bg);
   color:var(--text);
   display:flex;
   justify-content:center;
   align-items:center;
   height:100vh;
-  transition:.6s ease;
-}
-
-/* PAUSE BANNER */
-.pause-banner{
-  position:fixed;
-  top:-120px;
-  left:50%;
-  transform:translateX(-50%);
-  background:var(--accent);
-  color:white;
-  font-size:2rem;
-  font-weight:700;
-  padding:25px 80px;
-  border-radius:40px;
-  box-shadow:0 0 40px rgba(0,0,0,.6);
-  transition:.6s cubic-bezier(.25,.8,.25,1);
-  z-index:100;
-}
-.pause-banner.show{
-  top:30px;
+  overflow:hidden;
 }
 
 /* CARD */
 .card{
-  width:500px;
+  width:520px;
+  padding:35px;
+  border-radius:24px;
   background:var(--surface);
-  border-radius:22px;
-  padding:30px;
-  box-shadow:0 30px 80px rgba(0,0,0,.8);
+  box-shadow:0 40px 100px rgba(0,0,0,.8);
   position:relative;
-  transition:.6s ease;
+  overflow:hidden;
 }
 
 /* TITLE */
@@ -74,10 +46,33 @@ body{
 }
 
 .logo{
-  font-size:34px;
+  font-size:38px;
+  position:relative;
   animation:spin 2s linear infinite;
 }
+
+/* NEON TRAIL */
+.logo::before{
+  content:"";
+  position:absolute;
+  inset:-10px;
+  border-radius:50%;
+  background:conic-gradient(
+    transparent 0deg,
+    var(--accent) 60deg,
+    transparent 120deg
+  );
+  animation:trail 1.2s linear infinite;
+  filter:blur(12px);
+  z-index:-1;
+}
+
 @keyframes spin{
+  0%{transform:rotate(0deg);}
+  100%{transform:rotate(360deg);}
+}
+
+@keyframes trail{
   0%{transform:rotate(0deg);}
   100%{transform:rotate(360deg);}
 }
@@ -91,6 +86,7 @@ body{
   background:#00000033;
   color:var(--text);
   margin-bottom:12px;
+  box-sizing:border-box;
 }
 
 /* BUTTON */
@@ -103,25 +99,41 @@ button{
   cursor:pointer;
   background:var(--accent);
   color:white;
-  transition:.4s;
+  transition:.3s ease;
 }
 button:hover{
-  background:var(--accent-hover);
+  background:var(--accent2);
 }
 
-/* SUCCESS OVERLAY */
+/* LOADING */
+.loader{
+  display:none;
+  margin-top:10px;
+  text-align:center;
+}
+
+.loader span{
+  width:24px;
+  height:24px;
+  border:3px solid var(--accent);
+  border-top:3px solid transparent;
+  border-radius:50%;
+  display:inline-block;
+  animation:spin 1s linear infinite;
+}
+
+/* OVERLAY */
 .overlay{
   position:absolute;
   inset:0;
-  backdrop-filter:blur(8px);
-  background:#00000088;
+  backdrop-filter:blur(12px);
+  background:#000000aa;
   display:flex;
   justify-content:center;
   align-items:center;
-  border-radius:22px;
   opacity:0;
   pointer-events:none;
-  transition:.4s;
+  transition:.3s ease;
 }
 
 .overlay.active{
@@ -130,10 +142,11 @@ button:hover{
 }
 
 .check{
-  font-size:90px;
+  font-size:110px;
   color:#22c55e;
   animation:pop .5s ease;
 }
+
 @keyframes pop{
   0%{transform:scale(0);}
   70%{transform:scale(1.2);}
@@ -143,115 +156,182 @@ button:hover{
 /* DASHBOARD */
 .dashboard{
   display:none;
-  margin-top:20px;
 }
 
 .dashboard.show{
   display:block;
 }
 
-.key-box{
-  margin-top:10px;
-  padding:15px;
-  border-radius:12px;
-  background:#00000033;
-  border:1px solid var(--accent);
+/* FLOAT COPY */
+.copy-btn{
+  position:fixed;
+  bottom:30px;
+  right:30px;
+  background:var(--accent);
+  padding:15px 20px;
+  border-radius:50px;
+  font-weight:700;
+  box-shadow:0 0 25px var(--accent);
+  cursor:pointer;
+  animation:float 3s ease-in-out infinite;
 }
 
-/* FLOATING PAUSE BUTTON */
-.pause-btn{
-  position:fixed;
-  right:30px;
-  bottom:30px;
-  padding:14px 22px;
-  border-radius:30px;
-  background:var(--accent);
-  color:white;
-  font-weight:700;
-  cursor:pointer;
-  box-shadow:0 0 25px rgba(0,0,0,.6);
-  transition:.4s;
+@keyframes float{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-8px);}
 }
-.pause-btn:hover{
-  background:var(--accent-hover);
+
+.admin-panel{
+  margin-top:20px;
 }
 </style>
 </head>
 <body>
 
-<div class="pause-banner" id="pauseBanner">KEY PAUSED</div>
-
 <div class="card">
 
-  <div id="loginSection">
-    <div class="title">
-      <div class="logo">⚡</div>
-      <h2>ExelNotifier</h2>
-    </div>
-
-    <input id="keyInput" placeholder="EXEL-XXXX-XXXX">
-    <button onclick="redeem()">Redeem</button>
+<div id="loginSection">
+  <div class="title">
+    <div class="logo">⚡</div>
+    <h2>ExelNotifier</h2>
   </div>
 
-  <div class="dashboard" id="dashboard">
-    <h2>Dashboard</h2>
-    <div class="key-box">
-      <strong>Your Key:</strong>
-      <div id="displayKey"></div>
-    </div>
-  </div>
+  <input id="keyInput" placeholder="EXEL-XXXX-XXXX">
+  <button onclick="redeem()">Redeem</button>
 
-  <div class="overlay" id="overlay">
-    <div class="check">✔</div>
+  <div class="loader" id="loader">
+    <span></span>
   </div>
+</div>
+
+<div class="dashboard" id="dashboard">
+  <h2>Dashboard</h2>
+  <div><strong>Your Key:</strong> <span id="displayKey"></span></div>
+  <div><strong>Time:</strong> <span id="timeLeft"></span></div>
+
+  <div id="adminPanel" class="admin-panel"></div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="check">✔</div>
+</div>
 
 </div>
 
-<div class="pause-btn" id="pauseBtn" onclick="togglePause()">Pause Key</div>
+<div class="copy-btn" id="copyBtn" style="display:none;" onclick="copyScript()">
+Copy Script
+</div>
 
 <script>
-let paused = false;
+const SUPABASE_URL="https://skdhrvgrpcuvvfedkinc.supabase.co";
+const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNrZGhydmdycGN1dnZmZWRraW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5Mzk2MzMsImV4cCI6MjA4NTUxNTYzM30.YAZhwmjIrnqJfl-zVT6_a7zGDITbr6twMYCBoo_bbhs";
 
-function redeem(){
-  const keyInput = document.getElementById("keyInput");
-  const key = keyInput.value.trim().toUpperCase();
+const ADMIN_KEY="EXEL-ADMIN-2704";
 
-  if(!key || !key.startsWith("EXEL-")){
-    alert("Invalid Key");
+async function redeem(){
+  const key=document.getElementById("keyInput").value.trim().toUpperCase();
+  if(!key){alert("Enter key");return;}
+
+  document.getElementById("loader").style.display="block";
+
+  if(key===ADMIN_KEY){
+    successLogin(key,null,true);
     return;
   }
 
-  const overlay = document.getElementById("overlay");
+  const res=await fetch(
+    `${SUPABASE_URL}/rest/v1/licenses?key=eq.${key}&is_banned=eq.false`,
+    {headers:{
+      apikey:SUPABASE_KEY,
+      Authorization:`Bearer ${SUPABASE_KEY}`
+    }}
+  );
+
+  const data=await res.json();
+  document.getElementById("loader").style.display="none";
+
+  if(!data.length){alert("Invalid key");return;}
+
+  const lic=data[0];
+  const expTime=lic.expires_at?new Date(lic.expires_at).getTime():null;
+
+  if(expTime && Date.now()>=expTime){alert("Expired");return;}
+
+  successLogin(key,expTime,false);
+}
+
+function successLogin(key,expTime,isAdmin){
+  const overlay=document.getElementById("overlay");
   overlay.classList.add("active");
 
   setTimeout(()=>{
     overlay.classList.remove("active");
-    loadDashboard(key);
+    loadDashboard(key,expTime,isAdmin);
   },2000);
 }
 
-function loadDashboard(key){
+function loadDashboard(key,expTime,isAdmin){
   document.getElementById("loginSection").style.display="none";
-  const dash = document.getElementById("dashboard");
-  dash.classList.add("show");
-  document.getElementById("displayKey").textContent = key;
+  document.getElementById("dashboard").classList.add("show");
+  document.getElementById("displayKey").textContent=key;
+  document.getElementById("copyBtn").style.display="block";
+
+  if(!expTime){
+    document.getElementById("timeLeft").textContent="∞ Infinite";
+  }else{
+    startTimer(expTime);
+  }
+
+  if(isAdmin){
+    document.getElementById("adminPanel").innerHTML=
+      `<button onclick="generateInfinite()">Generate Infinite Key</button>`;
+  }
 }
 
-function togglePause(){
-  paused = !paused;
-  const body = document.body;
-  const banner = document.getElementById("pauseBanner");
-  const btn = document.getElementById("pauseBtn");
-
-  if(paused){
-    body.classList.add("paused");
-    banner.classList.add("show");
-    btn.textContent="Unpause Key";
-  }else{
-    body.classList.remove("paused");
-    banner.classList.remove("show");
-    btn.textContent="Pause Key";
+function startTimer(exp){
+  function update(){
+    const left=Math.floor((exp-Date.now())/1000);
+    if(left<=0){
+      document.getElementById("timeLeft").textContent="Expired";
+      return;
+    }
+    const h=Math.floor(left/3600);
+    const m=Math.floor((left%3600)/60);
+    const s=left%60;
+    document.getElementById("timeLeft").textContent=
+      h.toString().padStart(2,"0")+":"+
+      m.toString().padStart(2,"0")+":"+
+      s.toString().padStart(2,"0");
+    requestAnimationFrame(update);
   }
+  update();
+}
+
+async function generateInfinite(){
+  const key="EXEL-"+Math.random().toString(36).slice(2,6).toUpperCase()+"-"+Math.random().toString(36).slice(2,6).toUpperCase();
+
+  const res=await fetch(`${SUPABASE_URL}/rest/v1/licenses`,{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      apikey:SUPABASE_KEY,
+      Authorization:`Bearer ${SUPABASE_KEY}`,
+      Prefer:"return=minimal"
+    },
+    body:JSON.stringify({key:key,is_banned:false})
+  });
+
+  if(!res.ok){alert("Failed to generate key");return;}
+
+  navigator.clipboard.writeText(key);
+  alert("Generated & Copied: "+key);
+}
+
+function copyScript(){
+navigator.clipboard.writeText(
+`loadstring(game:HttpGet("https://raw.githubusercontent.com/exelscripts/joiner/refs/heads/main/exel"))()`
+);
+alert("Copied to clipboard");
 }
 </script>
 
