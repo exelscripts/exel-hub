@@ -2,315 +2,340 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>ExelNotifier</title>
+<title>ExelNotifier Preview</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
-body{
+body {
   margin:0;
-  min-height:100vh;
+  font-family:system-ui,sans-serif;
+  background:linear-gradient(135deg,#020617,#0f172a);
+  color:#e5e7eb;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  overflow-x:hidden;
+}
+
+/* CARD */
+.card {
+  width:480px;
+  max-width:95vw;
+  background:rgba(15,23,42,.85);
+  backdrop-filter:blur(20px);
+  border:1px solid rgba(56,189,248,.4);
+  border-radius:22px;
+  padding:25px;
+  box-shadow:0 30px 80px rgba(0,0,0,.8);
+  position:relative;
+  transition: all .5s ease;
+}
+
+/* BLUR EFFECT */
+.blur {
+  filter: blur(6px);
+  transition: filter .5s ease;
+}
+
+/* TITLE */
+.title {
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:20px;
+  font-size:1.3rem;
+}
+.logo-box {
+  width:50px;
+  height:50px;
+  border-radius:14px;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-family:system-ui,sans-serif;
-  background:linear-gradient(135deg,#020617,#020617 40%,#0f172a);
-  color:#e5e7eb;
-}
-
-/* ===== STATUS BAR TOP CENTER ===== */
-#statusBar{
-  position:fixed;
-  top:0;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:1000;
-  background:rgba(34,197,94,0.15);
-  border:1px solid rgba(34,197,94,0.5);
-  padding:10px 20px;
-  border-radius:0 0 10px 10px;
-  font-size:0.9em;
-  color:#bbf7d0;
-  display:none;
-  text-align:center;
-  min-width:200px;
-}
-
-/* ===== CARD ===== */
-.card{
-  width:90%;
-  max-width:480px;
-  background:rgba(15,23,42,.75);
-  backdrop-filter:blur(16px);
-  border:1px solid rgba(56,189,248,.35);
-  border-radius:20px;
-  padding:20px;
-  box-shadow:0 30px 60px rgba(0,0,0,.6);
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.15);
+  box-shadow:0 0 20px rgba(56,189,248,.8);
   position:relative;
+  overflow:hidden;
+  cursor:pointer;
+  transition: all .3s ease;
+}
+.logo-box span {
+  font-size:28px;
+  display:inline-block;
+  position:relative;
+  z-index:2;
+  animation:spin 2s linear infinite;
+}
+.logo-box::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:14px;
+  background:linear-gradient(45deg,#38bdf8,#60a5fa,#38bdf8);
+  filter:blur(10px);
+  opacity:.7;
+  z-index:1;
+  animation:turboTrail 2s linear infinite;
+}
+@keyframes spin {
+  0%{transform:rotate(0deg);}
+  100%{transform:rotate(360deg);}
+}
+@keyframes turboTrail {
+  0%{transform:rotate(0deg);}
+  100%{transform:rotate(360deg);}
+}
+.logo-box:hover {
+  transform:scale(1.2);
+  box-shadow:0 0 40px #38bdf8,0 0 80px #60a5fa;
 }
 
-/* ===== HEADINGS ===== */
-h2{margin:0 0 16px;color:#7dd3fc}
-
-/* ===== LICENSE KEY INPUT ===== */
+/* INPUT */
 #keyInput {
-  width:100%;
-  padding:14px;
-  border-radius:12px;
-  border:1px solid rgba(56,189,248,.35);
+  width:70%;
+  margin:0 auto 14px auto;
+  display:block;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid rgba(56,189,248,.4);
   background:rgba(2,6,23,.9);
   color:white;
-  font-size:1em;
-  box-sizing:border-box;
-  margin-bottom:12px;
   text-align:center;
 }
 
-/* ===== BUTTONS ===== */
-button{
+/* BUTTONS */
+button {
+  width:70%;
+  margin:8px auto;
+  display:block;
+  padding:10px;
   border:none;
-  border-radius:12px;
-  cursor:pointer;
-  font-weight:700;
-}
-button:hover{box-shadow:0 0 20px rgba(56,189,248,.5);}
-
-/* ===== ROW / PILLS ===== */
-.row{display:flex;gap:12px;margin-top:14px}
-.pill{
-  flex:1;
-  padding:14px;
-  border-radius:14px;
-  background:rgba(2,6,23,.8);
-  border:1px solid rgba(56,189,248,.35);
-  text-align:center;
-}
-.admin-btn{
-  background:rgba(56,189,248,.15);
-  color:#7dd3fc;
-  cursor:pointer;
-}
-
-/* ===== COPY BOX ===== */
-.copy-box{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  margin-top:18px;
-  padding:10px 12px;
-  border-radius:14px;
-  background:rgba(2,6,23,.85);
-  border:1px solid rgba(56,189,248,.35);
-}
-
-.copy-box span{
-  flex:1;
-  font-size:.85em;
-  color:#7dd3fc;
-  white-space:nowrap;       
-  overflow-x:auto;          
-  text-overflow:ellipsis;
-  padding-right:6px;
-}
-
-/* Small square copy button */
-.copy-btn{
-  flex:0 0 auto;
-  width:32px;
-  height:32px;
-  border:none;
-  border-radius:8px;
+  border-radius:10px;
   background:linear-gradient(135deg,#38bdf8,#60a5fa);
   color:#020617;
   font-weight:700;
+  cursor:pointer;
+  transition: all .3s ease;
+}
+button:hover {
+  transform:translateY(-2px);
+  box-shadow:0 0 20px rgba(56,189,248,.8);
+}
+
+/* PILL */
+.pill {
+  margin-top:12px;
+  padding:10px;
+  border-radius:10px;
+  background:rgba(2,6,23,.8);
+  border:1px solid rgba(56,189,248,.4);
+  text-align:center;
+}
+
+/* ADMIN PANEL */
+#adminPanel {
+  max-height:0;
+  overflow:hidden;
+  opacity:0;
+  transition: all .5s ease;
+  margin-top:10px;
+}
+#adminPanel.open {
+  max-height:100px;
+  opacity:1;
+}
+
+/* FLOATING COPY BUTTON */
+.floating-copy {
+  position:fixed;
+  bottom:25px;
+  right:25px;
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#38bdf8,#60a5fa);
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:1em;
-}
-.copy-btn:hover{
-  box-shadow:0 0 8px rgba(56,189,248,.5);
-}
-
-/* ===== LOGOUT BUTTON ===== */
-.logout{
-  width:100%;
-  padding:14px;
-  margin-top:14px;
-  background:#ef4444;
-  color:white;
-}
-
-/* ===== ADMIN DASHBOARD ===== */
-#adminPanel{
+  cursor:pointer;
+  box-shadow:0 0 25px rgba(56,189,248,.9);
+  animation:pulse 2s infinite;
   display:none;
-  margin-top:14px;
+}
+.floating-copy:hover {
+  transform:scale(1.1);
+}
+@keyframes pulse {
+  0%{box-shadow:0 0 20px rgba(56,189,248,.7);}
+  50%{box-shadow:0 0 40px rgba(56,189,248,1);}
+  100%{box-shadow:0 0 20px rgba(56,189,248,.7);}
+}
+
+/* SUCCESS CHECK */
+.loading-overlay {
+  position:absolute;
+  inset:0;
+  background:rgba(2,6,23,.8);
   display:flex;
-  flex-wrap:wrap;
-  gap:10px;
+  align-items:center;
+  justify-content:center;
+  border-radius:22px;
+  z-index:10;
+  display:none;
 }
-#adminPanel button{
-  flex:1 1 calc(33% - 10px);
-  background:linear-gradient(135deg,#1f2937,#374151); /* dark grey glass */
-  color:white;
+.success-check {
+  font-size:72px;
+  color:#22c55e;
+  display:block;
+  animation:scaleUp 0.5s ease forwards;
+}
+@keyframes scaleUp {
+  0%{transform:scale(0);}
+  100%{transform:scale(1);}
+}
+
+/* KEY DISPLAY */
+.key-box {
+  margin-top:12px;
   padding:10px;
-  font-size:0.85em;
+  background:rgba(0,0,0,.6);
+  border:1px solid #38bdf8;
+  border-radius:10px;
+  text-align:center;
+}
+
+/* TOAST */
+.toast {
+  position:fixed;
+  bottom:100px;
+  right:25px;
+  background:rgba(34,197,94,.15);
+  border:1px solid rgba(34,197,94,.5);
+  color:#bbf7d0;
+  padding:12px 18px;
   border-radius:12px;
+  font-size:.9rem;
+  opacity:0;
+  transition:.3s ease;
 }
-#adminPanel button:hover{
-  box-shadow:0 0 10px rgba(255,255,255,.2);
-}
+.toast.show {opacity:1;}
 </style>
 </head>
 <body>
 
-<!-- STATUS BAR -->
-<div id="statusBar">Copied to clipboard 📋</div>
-
-<!-- LOGIN -->
-<div class="card" id="login">
-  <h2>Enter License Key</h2>
+<!-- LOGIN CARD -->
+<div id="login" class="card">
+  <div class="title">
+    <div class="logo-box"><span>⚡</span></div>
+    <h2>ExelNotifier</h2>
+  </div>
   <input id="keyInput" placeholder="EXEL-XXXX-XXXX">
-  <button onclick="redeem()">Redeem</button>
+  <button id="redeemBtn">Redeem</button>
+  <div class="loading-overlay" id="loadingBox">
+    <div class="success-check" id="successCheck">✔</div>
+  </div>
 </div>
 
-<!-- APP -->
-<div class="card" id="app" style="display:none">
-  <h2>exel hub finder paid, find brainrots INSTANTLY ⚡⏩</h2>
-
-  <div class="row">
-    <div class="pill">
-      ⏳ Time remaining: <b id="timeLeft">--:--:--</b>
-    </div>
-    <div id="adminBtn" class="pill admin-btn" onclick="toggleAdmin()" style="display:none">
-      Admin Dashboard
-    </div>
+<!-- APP CARD -->
+<div id="app" class="card" style="display:none">
+  <div class="title">
+    <div class="logo-box"><span>⚡</span></div>
+    <h2>ExelNotifier</h2>
   </div>
-
+  <div class="pill">⏳ Time remaining: <b id="timeLeft">inf ♾️</b></div>
+  <div id="keyDisplay" class="key-box"></div>
   <div id="adminPanel"></div>
-
-  <!-- COPY BOX -->
-  <div class="copy-box">
-    <span id="scriptLabel">
-loadstring(game:HttpGet("https://raw.githubusercontent.com/exelscripts/joiner/refs/heads/main/exel"))()
-    </span>
-    <button class="copy-btn" onclick="copyScript()">📋</button>
-  </div>
-
-  <button class="logout" onclick="logout()">Logout</button>
+  <button onclick="logout()" style="background:#ef4444;color:white;">Logout</button>
 </div>
+
+<!-- FLOATING COPY BUTTON -->
+<div class="floating-copy" id="copyBtn" onclick="copyScript()">📋</div>
+<div class="toast" id="toast">Copied to clipboard ✅</div>
 
 <script>
-/* CONFIG */
-const SUPABASE_URL = "https://skdhrvgrpcuvvfedkinc.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNrZGhydmdycGN1dnZmZWRraW5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5Mzk2MzMsImV4cCI6MjA4NTUxNTYzM30.YAZhwmjIrnqJfl-zVT6_a7zGDITbr6twMYCBoo_bbhs";
-const ADMIN_KEY = "EXEL-ADMIN-2704";
+document.addEventListener("DOMContentLoaded", ()=>{
+  const login = document.getElementById("login");
+  const app = document.getElementById("app");
+  const keyInput = document.getElementById("keyInput");
+  const loadingBox = document.getElementById("loadingBox");
+  const successCheck = document.getElementById("successCheck");
+  const copyBtn = document.getElementById("copyBtn");
+  const adminPanel = document.getElementById("adminPanel");
+  const keyDisplay = document.getElementById("keyDisplay");
+  const toast = document.getElementById("toast");
 
-/* LOGIN */
-async function redeem(){
-  const key = keyInput.value.trim().toUpperCase();
-  if(!key) return;
-  if(key === ADMIN_KEY){
-    localStorage.setItem("admin","1");
-    showApp(true);
-    return;
+  const ADMIN_KEY="EXEL-ADMIN-2704";
+
+  function showToast(msg){
+    toast.textContent=msg;
+    toast.classList.add("show");
+    setTimeout(()=>toast.classList.remove("show"),1800);
   }
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/licenses?key=eq.${key}&is_banned=eq.false`,{
-    headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}
+
+  document.getElementById("redeemBtn").addEventListener("click", ()=>{
+    const key = keyInput.value.trim().toUpperCase();
+    if(!key) {
+      alert("Enter a key");
+      return;
+    }
+
+    // Only valid keys
+    if(key===ADMIN_KEY || key.startsWith("EXEL-")){
+      // Show overlay with checkmark
+      loadingBox.style.display="flex";
+      login.classList.add("blur");
+
+      setTimeout(()=>{
+        // Hide overlay and unblur
+        loadingBox.style.display="none";
+        login.classList.remove("blur");
+        login.style.display="none";
+        app.style.display="block";
+        copyBtn.style.display="flex";
+
+        keyDisplay.textContent = "Your Key: " + key;
+
+        // Admin infinite key button
+        if(key===ADMIN_KEY){
+          adminPanel.classList.add("open");
+          adminPanel.innerHTML="";
+          const b = document.createElement("button");
+          b.textContent="Generate Infinite Key";
+          b.onclick=()=>{
+            const key="EXEL-"+Math.random().toString(36).slice(2,6).toUpperCase()+"-"+Math.random().toString(36).slice(2,6).toUpperCase();
+            navigator.clipboard.writeText(key);
+            showToast("Infinite Key Copied: "+key);
+          };
+          adminPanel.appendChild(b);
+        }
+
+      },2000);
+
+    } else {
+      alert("Invalid key");
+    }
   });
-  const data = await res.json();
-  if(!data.length){ alert("Invalid key"); return; }
-  const lic = data[0];
-  if(Date.now() >= lic.expires_at){ alert("Key expired"); return; }
-  localStorage.setItem("key", key);
-  localStorage.setItem("expires", lic.expires_at);
-  showApp(false);
-}
 
-/* APP */
-function showApp(admin){
-  login.style.display="none";
-  app.style.display="block";
-  adminBtn.style.display = admin ? "flex":"none";
-  if(admin){
-    timeLeft.textContent="inf ♾️";
-    renderAdmin();
-  } else { startTimer(); }
-}
-
-function startTimer(){
-  const exp = parseInt(localStorage.getItem("expires"));
-  function tick(){
-    const left = Math.floor((exp - Date.now())/1000);
-    if(left <= 0){ alert("Expired"); logout(); return; }
-    const h=Math.floor(left/3600);
-    const m=Math.floor((left%3600)/60);
-    const s=left%60;
-    timeLeft.textContent =
-      `${h.toString().padStart(2,"0")}:`+
-      `${m.toString().padStart(2,"0")}:`+
-      `${s.toString().padStart(2,"0")}`;
-    requestAnimationFrame(tick);
+  // Copy script
+  window.copyScript = ()=>{
+    const script='loadstring(game:HttpGet("https://raw.githubusercontent.com/exelscripts/joiner/refs/heads/main/exel"))()';
+    navigator.clipboard.writeText(script);
+    showToast("Script copied 📋");
   }
-  tick();
-}
 
-/* ADMIN DASHBOARD */
-function toggleAdmin(){
-  adminPanel.style.display =
-    adminPanel.style.display==="flex"?"none":"flex";
-}
-
-function renderAdmin(){
-  adminPanel.innerHTML="";
-  const times=[["1 Hour",3600],["1 Day",86400],["1 Week",604800]];
-  times.forEach(t=>{
-    const b=document.createElement("button");
-    b.textContent="Generate "+t[0];
-    b.onclick=()=>generate(t[1]);
-    adminPanel.appendChild(b);
-  });
-}
-
-/* COPY SCRIPT WITH STATUS BAR */
-function copyScript(){
-  const text = document.getElementById("scriptLabel").innerText;
-  navigator.clipboard.writeText(text);
-  const statusBar = document.getElementById("statusBar");
-  statusBar.style.display="block";
-  setTimeout(()=>statusBar.style.display="none",1200);
-}
-
-/* LOGOUT */
-function logout(){
-  localStorage.clear();
-  location.reload();
-}
-
-/* AUTO LOGIN */
-if(localStorage.getItem("admin")) showApp(true);
-else if(localStorage.getItem("key")) showApp(false);
-
-/* GENERATE KEY */
-async function generate(seconds){
-  const key="EXEL-"+Math.random().toString(36).slice(2,6).toUpperCase()+"-"+Math.random().toString(36).slice(2,6).toUpperCase();
-  const expires=Date.now()+seconds*1000;
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/licenses`,{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      apikey:SUPABASE_KEY,
-      Authorization:`Bearer ${SUPABASE_KEY}`,
-      Prefer:"return=minimal"
-    },
-    body:JSON.stringify({ key:key, expires_at:expires })
-  });
-  if(!res.ok){ alert("Failed"); return; }
-  await navigator.clipboard.writeText(key);
-  const statusBar = document.getElementById("statusBar");
-  statusBar.textContent = "Copied to clipboard 📋 → "+key;
-  statusBar.style.display="block";
-  setTimeout(()=>statusBar.style.display="none",1600);
-}
+  // Logout
+  window.logout = ()=>{
+    login.style.display="block";
+    app.style.display="none";
+    copyBtn.style.display="none";
+    keyInput.value="";
+    keyDisplay.textContent="";
+    adminPanel.innerHTML="";
+    adminPanel.classList.remove("open");
+  }
+});
 </script>
+
 </body>
 </html>
