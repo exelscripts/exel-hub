@@ -14,7 +14,6 @@
   --text:#e5e7eb;
 }
 
-/* PAUSED THEME */
 body.paused{
   --bg:#0F172A;
   --surface:#1E293B;
@@ -32,10 +31,10 @@ body{
   justify-content:center;
   align-items:center;
   height:100vh;
-  transition:all .6s ease;
+  transition:.6s ease;
 }
 
-/* KEY PAUSED BANNER */
+/* PAUSE BANNER */
 .pause-banner{
   position:fixed;
   top:-120px;
@@ -48,7 +47,7 @@ body{
   padding:25px 80px;
   border-radius:40px;
   box-shadow:0 0 40px rgba(0,0,0,.6);
-  transition:all .6s cubic-bezier(.25,.8,.25,1);
+  transition:.6s cubic-bezier(.25,.8,.25,1);
   z-index:100;
 }
 .pause-banner.show{
@@ -57,12 +56,13 @@ body{
 
 /* CARD */
 .card{
-  width:480px;
+  width:500px;
   background:var(--surface);
   border-radius:22px;
   padding:30px;
   box-shadow:0 30px 80px rgba(0,0,0,.8);
-  transition:all .6s ease;
+  position:relative;
+  transition:.6s ease;
 }
 
 /* TITLE */
@@ -72,8 +72,9 @@ body{
   gap:14px;
   margin-bottom:20px;
 }
+
 .logo{
-  font-size:32px;
+  font-size:34px;
   animation:spin 2s linear infinite;
 }
 @keyframes spin{
@@ -112,21 +113,49 @@ button:hover{
 .overlay{
   position:absolute;
   inset:0;
-  background:#000000aa;
+  backdrop-filter:blur(8px);
+  background:#00000088;
   display:flex;
   justify-content:center;
   align-items:center;
   border-radius:22px;
-  display:none;
+  opacity:0;
+  pointer-events:none;
+  transition:.4s;
 }
+
+.overlay.active{
+  opacity:1;
+  pointer-events:all;
+}
+
 .check{
-  font-size:80px;
+  font-size:90px;
   color:#22c55e;
-  animation:pop .4s ease;
+  animation:pop .5s ease;
 }
 @keyframes pop{
   0%{transform:scale(0);}
+  70%{transform:scale(1.2);}
   100%{transform:scale(1);}
+}
+
+/* DASHBOARD */
+.dashboard{
+  display:none;
+  margin-top:20px;
+}
+
+.dashboard.show{
+  display:block;
+}
+
+.key-box{
+  margin-top:10px;
+  padding:15px;
+  border-radius:12px;
+  background:#00000033;
+  border:1px solid var(--accent);
 }
 
 /* FLOATING PAUSE BUTTON */
@@ -152,18 +181,30 @@ button:hover{
 
 <div class="pause-banner" id="pauseBanner">KEY PAUSED</div>
 
-<div class="card" id="login">
-  <div class="title">
-    <div class="logo">⚡</div>
-    <h2>ExelNotifier</h2>
+<div class="card">
+
+  <div id="loginSection">
+    <div class="title">
+      <div class="logo">⚡</div>
+      <h2>ExelNotifier</h2>
+    </div>
+
+    <input id="keyInput" placeholder="EXEL-XXXX-XXXX">
+    <button onclick="redeem()">Redeem</button>
   </div>
 
-  <input id="keyInput" placeholder="EXEL-XXXX-XXXX">
-  <button onclick="redeem()">Redeem</button>
+  <div class="dashboard" id="dashboard">
+    <h2>Dashboard</h2>
+    <div class="key-box">
+      <strong>Your Key:</strong>
+      <div id="displayKey"></div>
+    </div>
+  </div>
 
   <div class="overlay" id="overlay">
     <div class="check">✔</div>
   </div>
+
 </div>
 
 <div class="pause-btn" id="pauseBtn" onclick="togglePause()">Pause Key</div>
@@ -172,19 +213,28 @@ button:hover{
 let paused = false;
 
 function redeem(){
-  const key = document.getElementById("keyInput").value.trim().toUpperCase();
-  if(!key || !key.startsWith("EXEL-")) {
+  const keyInput = document.getElementById("keyInput");
+  const key = keyInput.value.trim().toUpperCase();
+
+  if(!key || !key.startsWith("EXEL-")){
     alert("Invalid Key");
     return;
   }
 
   const overlay = document.getElementById("overlay");
-  overlay.style.display="flex";
+  overlay.classList.add("active");
 
   setTimeout(()=>{
-    overlay.style.display="none";
-    alert("Dashboard Loaded (Preview)");
+    overlay.classList.remove("active");
+    loadDashboard(key);
   },2000);
+}
+
+function loadDashboard(key){
+  document.getElementById("loginSection").style.display="none";
+  const dash = document.getElementById("dashboard");
+  dash.classList.add("show");
+  document.getElementById("displayKey").textContent = key;
 }
 
 function togglePause(){
